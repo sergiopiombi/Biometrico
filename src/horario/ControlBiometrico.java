@@ -248,7 +248,7 @@ public class ControlBiometrico{
 		}
 		catch(Exception ex)
 		{
-			ex.printStackTrace();
+			ex.printStackTrace(); 
 		}
 	}          
 
