@@ -3,10 +3,9 @@ package horario;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Date;
-import java.util.logging.Level;
+
 
 //import org.adempiere.utils.Miscfunc;
 //import org.compiere.model.X_EMP_ControlBiometrico;
@@ -17,11 +16,9 @@ import smack.comm.SBXPCProxy;
 import smack.comm.output.GeneralLogDataOutput;
 import smack.comm.data.SysUtil;
 
-
-
 /**
  * 
- * @author Sergio
+ * @author Sergio.Piombi
  * 
  */
 public class ControlBiometrico{
