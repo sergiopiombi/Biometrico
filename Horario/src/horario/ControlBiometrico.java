@@ -18,7 +18,7 @@ import smack.comm.data.SysUtil;
 
 /**
  * 
- * @author Sergio.Piombi
+ * @author Version Emiliano nuñez
  * 
  */
 public class ControlBiometrico{
