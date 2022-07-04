@@ -3,5 +3,9 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/SBXPCProxyLib"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="C:/D/ControlHorario/Horario/jar/jxl.jar"/>
+	<classpathentry kind="lib" path="C:/D/ControlHorario/Horario/jar/Utils.jar"/>
+	<classpathentry kind="lib" path="C:/D/ControlHorario/Horario/jar/dbf.jar"/>
+	<classpathentry kind="lib" path="C:/D/ControlHorario/Horario/jar/roca.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
