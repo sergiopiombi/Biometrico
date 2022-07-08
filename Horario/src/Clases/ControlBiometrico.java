@@ -1,22 +1,32 @@
 package Clases;
 
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
-
-import org.adempiere.utils.DatosEmpleados;
 
 import smack.comm.SBXPCProxy;
 import smack.comm.output.GeneralLogDataOutput;
 import smack.comm.data.SysUtil;
 import Utilidades.generaXLS;
+
+
+
 /**
  * 
  * @author Sergio.Piombi
  * 
  */
 public class ControlBiometrico{
-
+	
+	private static final String PATH = System.getProperty("user.home") + File.separator + "reportes" + File.separator + "config.txt";
+	
 	private String ip = "";
 	private Long puerto = new Long(0);
 	private Long pass = new Long(0);
@@ -53,7 +63,7 @@ public class ControlBiometrico{
 		}
 	}                                            
 
-	private boolean ReadYSave() 
+	private boolean ReadYSave(String nombrePlanilla) 
 	{                                               
 		
 		boolean ok = false;
@@ -123,6 +133,13 @@ public class ControlBiometrico{
 					df.setMinutos(minutos);
 					df.setSegundos(Integer.parseInt(String.valueOf(output.dwSecond)));
 					df.setNromaquina(Integer.parseInt(String.valueOf(output.dwEMachineNumber)));
+										
+					
+					Calendar c = Calendar.getInstance();
+					c.set(Integer.parseInt(String.valueOf(output.dwYear)), Integer.parseInt(String.valueOf(output.dwMonth))-1, Integer.parseInt(String.valueOf(output.dwDay)));
+					
+					Timestamp fecha =  DateToTimestamp(c.getTime());
+					df.setFecha(fecha);
 					
 					// Lleno el array con los datos
 					arDatosFichada.add(df);
@@ -135,13 +152,11 @@ public class ControlBiometrico{
 							output.dwHour + ":" + output.dwMinute + ":" + output.dwSecond + " - " +
 							output.dwYear + "/" + output.dwMonth + "/" + output.dwDay + "-" +
 							output.dwEMachineNumber + "-" + output.dwTMachineNumber + "-" + 
-							output.dwVerifyMode);
+							output.dwVerifyMode + " " + String.valueOf(output.dwEMachineNumber));
 				}
 
-
-				
 			generaXLS g = new generaXLS();
-			g.doIt(arDatosFichada);
+			g.doIt(arDatosFichada,nombrePlanilla);
 				
 				
 			}else {
@@ -162,7 +177,11 @@ public class ControlBiometrico{
 		}
 			
 		return ok;
-	}                                              
+	}       
+	
+	public Timestamp DateToTimestamp(Date fecha) {
+		return fecha == null ? null : new Timestamp(fecha.getTime());
+	}
 
 	private void Empty() 
 	{                                                
@@ -208,22 +227,21 @@ public class ControlBiometrico{
 		
 		try
 		{
-
-			// Aca leo y recorro los aparatos de la connfigruacion del archivo.
-			// por ahora fijo
+			List<PropiedadesHorario> arPH =  getConfiguracion();
 			
-			int i=0;
-			while(i<2)
+			for(PropiedadesHorario ph : arPH)
 			{
-				ip = "192.168.0.17"; //rs.getString("ip");
-				puerto = Long.parseLong("5005"); // String.valueOf(rs.getInt("puerto"))
-				pass = Long.parseLong("0"); //Long.parseLong(rs.getString("password"));
-				numero_maquina = Long.parseLong("1"); //Long.parseLong(String.valueOf(rs.getInt("numeromaquina")));
+				
+				ip = ph.getIp();
+				puerto = ph.getPuerto();
+				pass = ph.getPass();
+				numero_maquina = ph.getNumero_maquina();
+				
 				
 				if(Open())
 				{
-					if(ReadYSave())
-						Empty();
+					if(ReadYSave(ph.getNombreEquipo()));
+						//Empty();
 					else
 						value = "Error - No Pudo Grabar Movimientos - Intente Nuevamente";
 						
@@ -231,7 +249,6 @@ public class ControlBiometrico{
 				}
 				else
 					value = "No Pudo Conectar con Aparato numero " + numero_maquina;
-				i++;
 			}
 		}
 		catch(Exception ex)
@@ -243,5 +260,69 @@ public class ControlBiometrico{
 		
 		return value;
 	}
+	
+	
+	
+	private List<PropiedadesHorario> getConfiguracion() {
+		FileReader     fr = null;
+		BufferedReader br = null;
+		List<PropiedadesHorario> arPH = new ArrayList<PropiedadesHorario>();
 
+		try
+		{
+			fr = new FileReader(PATH);
+			br = new BufferedReader(fr);
+
+			String line="";
+			PropiedadesHorario ph = null;
+			while ((line = br.readLine()) != null){
+				
+				if(!line.isEmpty()){
+				
+					if(ph == null)
+						ph = new PropiedadesHorario();
+					
+					if(line.contains("@IP"))
+						ph.setIp(line.split("=")[1]);
+					if(line.contains("@PUERTO"))
+						ph.setPuerto(Long.parseLong( (line.split("=")[1])));
+					if(line.contains("@PASSWORD"))
+						ph.setPass(Long.parseLong( (line.split("=")[1])));
+					if(line.contains("@NROMAQUINA"))
+						ph.setNumero_maquina(Long.parseLong( (line.split("=")[1])));
+					if(line.contains("@PLANILLA"))
+						ph.setNombreEquipo(line.split("=")[1]);
+				}	
+				
+				if(line.contains("@~@")) {
+					arPH.add(ph);
+					ph=null;
+				}
+				
+			}	
+
+		}
+		catch(Exception ex) {
+			ex.printStackTrace();
+
+		}
+		finally
+		{
+			try {
+				br.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			try {
+				fr.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return arPH;
+	}
+
+	
+	
 }

@@ -1,6 +1,6 @@
 package Clases;
 
-import java.util.ArrayList;
+import java.sql.Timestamp;
 
 public class DatosFichada {
 	
@@ -9,6 +9,8 @@ public class DatosFichada {
 	private int segundos;
 	private int nromaquina;
 	private int nrodocumento;
+	private Timestamp fecha;
+	
 	
 	public int getNrodocumento() {
 		return nrodocumento;
@@ -40,28 +42,16 @@ public class DatosFichada {
 	public void setNromaquina(int nromaquina) {
 		this.nromaquina = nromaquina;
 	}
-	
+	public Timestamp getFecha() {
+		return fecha;
+	}
+	public void setFecha(Timestamp fecha) {
+		this.fecha = fecha;
+	}
 
 	public DatosFichada() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 	
-	public void generoDatos(ArrayList<String> datos) {
-		
-	}
 	
-
-	public DatosFichada getDatos() {
-		DatosFichada df = new DatosFichada();
-		
-		df.setNrodocumento(this.getNrodocumento());
-		df.setHora(this.getHora());
-		df.setMinutos(this.getMinutos());
-		df.setSegundos(this.getSegundos());
-		df.setNromaquina(this.getNromaquina());
-				
-		return df;		
-	}
-
 }
